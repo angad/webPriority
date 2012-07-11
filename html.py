@@ -4,12 +4,16 @@
 from HTMLParser import HTMLParser
 import urllib
 from operator import itemgetter
+from argparse import ArgumentParser
 
-"""
-TODO: 
-Parse Javascript for external content (embed, object)
-Parse CSS for background images
-"""
+parser = ArgumentParser(description="Web Page Parser")
+parser.add_argument('--url', '-u',
+                    dest="url",
+                    action="store",
+                    help="URL",
+                    required=True)
+
+args = parser.parse_args()
 
 class PagePriority(HTMLParser):
     
@@ -65,7 +69,6 @@ class PagePriority(HTMLParser):
         pass
     
     def handle_data(self, data):
-#        print data
         pass
     
     def print_list(self):
@@ -75,7 +78,7 @@ class PagePriority(HTMLParser):
 
 def main():
     parser = PagePriority()
-    f = urllib.urlopen("http://techcrunch.com")
+    f = urllib.urlopen(args.url)
     s = f.read()
     f.close()
     
