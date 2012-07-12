@@ -6,6 +6,7 @@ import urllib
 from operator import itemgetter
 from argparse import ArgumentParser
 from header import headerBuilder
+import json
 
 parser = ArgumentParser(description="Web Page Parser")
 parser.add_argument('--url', '-u',
@@ -81,15 +82,24 @@ class PagePriority(HTMLParser):
         print 'Number of Elements: ' + str(count)
     
                 
-    def create_headers(self):
+    def create_headers(self, outFile):
         count = 0
+        json_elements = []
         self.elements.sort(key=itemgetter(0))
         for element in self.elements:
             url = [a[1] for a in element if a[0] == 'href' or a[0] == 'src']
             url = url[0].encode('ascii', 'ignore')
-            print headerBuilder.construct(url)
+            priority = [a[1] for a in element if a[0] == 'priority']
+            priority = priority[0]
+            get_request = headerBuilder.construct(url)
+            json_element = {'id': count,  'priority': priority, 
+                        "request": get_request}
+            json_elements.append(json_element)
             count += 1
-            
+
+        json_content = json.dumps(json_elements)
+        print json_content
+        outFile.write(json_content)            
         print 'Number of Requests: ' + str(count)
 
 def main():
@@ -99,8 +109,11 @@ def main():
     f.close()
     s = s.decode('utf-8')
     parser.feed(s)
-#    parser.print_list()
-    parser.create_headers()
+
+    # parser.print_list()
+    outFile = open('requests', 'w')
+    parser.create_headers(outFile)
+    outFile.close()
 
 if __name__ == '__main__':
     main()
