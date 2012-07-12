@@ -91,13 +91,13 @@ class PagePriority(HTMLParser):
             count += 1
             
         print 'Number of Requests: ' + str(count)
-                        
+
 def main():
     parser = PagePriority()
     f = urllib.urlopen(args.url)
     s = f.read()
     f.close()
-    
+    s = s.decode('utf-8')
     parser.feed(s)
 #    parser.print_list()
     parser.create_headers()
