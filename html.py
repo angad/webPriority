@@ -5,6 +5,7 @@ from HTMLParser import HTMLParser
 import urllib
 from operator import itemgetter
 from argparse import ArgumentParser
+from header import headerBuilder
 
 parser = ArgumentParser(description="Web Page Parser")
 parser.add_argument('--url', '-u',
@@ -72,10 +73,25 @@ class PagePriority(HTMLParser):
         pass
     
     def print_list(self):
+        count = 0
         self.elements.sort(key=itemgetter(0))
         for element in self.elements:
             print element
-
+            count += 1
+        print 'Number of Elements: ' + str(count)
+    
+                
+    def create_headers(self):
+        count = 0
+        self.elements.sort(key=itemgetter(0))
+        for element in self.elements:
+            url = [a[1] for a in element if a[0] == 'href' or a[0] == 'src']
+            url = url[0].encode('ascii', 'ignore')
+            print headerBuilder.construct(url)
+            count += 1
+            
+        print 'Number of Requests: ' + str(count)
+                        
 def main():
     parser = PagePriority()
     f = urllib.urlopen(args.url)
@@ -83,7 +99,8 @@ def main():
     f.close()
     
     parser.feed(s)
-    parser.print_list()
+#    parser.print_list()
+    parser.create_headers()
 
 if __name__ == '__main__':
     main()
