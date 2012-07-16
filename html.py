@@ -5,7 +5,7 @@ from HTMLParser import HTMLParser
 import urllib
 from operator import itemgetter
 from argparse import ArgumentParser
-from header import headerBuilder
+from HTTPHeader import headerBuilder
 import json
 import urlparse
 
