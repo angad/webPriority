@@ -26,6 +26,7 @@ class PagePriority(HTMLParser):
     IMAGE = 3
     EMBED = 4
     IFRAME = 5
+    AD = 6
     
     def handle_starttag(self, tag, attrs):
         #import pdb; pdb.set_trace()    
@@ -82,6 +83,9 @@ class PagePriority(HTMLParser):
             count += 1
         print 'Number of Elements: ' + str(count)
     
+    
+    def check_if_ad(self, url):
+        
                 
     def create_headers(self, outFile):
         default_hostname = urlparse.urlparse(args.url).hostname 
@@ -97,8 +101,14 @@ class PagePriority(HTMLParser):
                 hostname = url_parsed.hostname
                 if hostname is None:
                     url = "http:// " + default_hostname + url
-                priority = [a[1] for a in element if a[0] == 'priority']
-                priority = priority[0]
+                    
+                isad = check_if_ad(url)
+                if isad is True:
+                    priority = self.AD
+                else:
+                    priority = [a[1] for a in element if a[0] == 'priority']
+                    priority = priority[0]
+                
                 get_request = headerBuilder.construct(url)
                 json_element = {'id': count,  'priority': priority, 
                                 "request": get_request}

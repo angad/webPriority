@@ -1,0 +1,16 @@
+[Adblock Plus 2.0]
+! Title: EasyTest (breaks websites)
+! Testing unsafe rules for EasyList that will break certain websites
+! Last modified: %timestamp%
+! Expires: 1 day (update frequency)
+! Homepage: http://forums.lanik.us/viewtopic.php?t=8505
+!
+! The only legitimate reason to use this list is to provide
+! feedback in the forum topic above - now go do that! :P
+!
+! Test 1: Google Analytics
+!
+||google-analytics.com^$third-party
+@@||google-analytics.com/ga.js$domain=appspot.com|jetbrains.com|imageshack.us|avast.com|kleinanzeigen.ebay.de|tetrisfriends.com|getjar.com|meininger-hotels.com
+@@||google-analytics.com/siteopt.js?$domain=chip.de
+@@||google-analytics.com/urchin.js$domain=muselive.com|wickedthemusical.com

@@ -1,0 +1,51 @@
+! German
+@@||a.wikia-beacon.com/__track/view?v=v1&c=*&lc=de&lid=62&x=devroniplag&y=$script,domain=vroniplag.wikia.com
+@@||arte.tv^*/xtcore.js
+@@||billiger.de/js/emos2.js
+@@||buffaloshop.de^*/webtrekk.js
+@@||code.etracker.com/t.js?et=$script,domain=kaguma.com
+@@||coremetrics.com/eluminate.js$domain=tassimo.de
+@@||eatsmarter.de^*/webtrekk.js
+@@||esprit.de^*/webtrekk.js
+@@||esprit.de^*/webtrekk_conf.js
+@@||fussball.de/fbed/js/xtcore.js
+@@||hammonline.de/statistik/piwik.js
+@@||heute.de/zdf/flash/eplayer/player.swf?*/cgi-bin/ivw/
+@@||ing-diba.de^*/sitestat.js
+@@||ivwbox.de/2004/01/survey.js$domain=stylished.de
+@@||ivwextern.prosieben.de/crossdomain.xml$object-subrequest,domain=galileo-videolexikon.de
+@@||ivwextern.prosieben.de/php-bin/functions/ivwbox/ivwbox_extern.php?path=$object-subrequest,domain=galileo-videolexikon.de
+@@||ivwextern.prosieben.de^*/ivw_flashscript.php?$script
+@@||livepass.conviva.com^$object-subrequest,domain=ardmediathek.de|sportschau.de
+@@||livepassdl.conviva.com/crossdomain.xml$object-subrequest,domain=ardmediathek.de|sportschau.de
+@@||livepassdl.conviva.com/osmf/convivaosmfplugin_*swf?$object-subrequest,domain=ardmediathek.de|sportschau.de
+@@||livepassdl.conviva.com/ver/*/livepassmodulemain_osmf.swf$object-subrequest,domain=ardmediathek.de|sportschau.de
+@@||longtailvideo.com/5/googlytics/googlytics-1.js$domain=arte.tv
+@@||maxmind.com^*/geoip.js$domain=automatensuche.de
+@@||real.de/fileadmin/template/javascript/emos2.js
+@@||rover.ebay.com/ar/1/75997/4?mpt=*&size=300x250&adid=$image,domain=millionenklick.web.de
+@@||scorecardresearch.com/beacon.js$domain=spielen.com
+@@||scorecardresearch.com/crossdomain.xml$object-subrequest,domain=web.de
+@@||scorecardresearch.com/p?$object-subrequest,domain=web.de
+@@||sitestat.com/europcar/europcar-de/*&ns_url=http://microsite.europcar.com/deutschebahn/$subdocument,domain=bahn.de
+@@||stylished.de/js/vendors/emos2.js$domain=stylished.de
+@@||uim.tifbs.net/js/3423.js$domain=top.de
+@@||willhaben.apa.net/clientscript/xtcore.js
+@@||yimg.com/mi/eu/ywa.js$domain=immowelt.de
+@@||zdf.de/zdf/flash/eplayer/player.swf?*/cgi-bin/ivw/
+! French
+@@||cot.priceminister.com/res/static/*/xtcore.js
+! Dutch
+@@||vpro.nl/vpro/htmlplayer/0.3-snapshot/statcounter.js?
+! Greek
+@@||stats.e-go.gr/rx.asp?$object-subrequest,domain=megatv.com
+! Italian
+@@||androidgalaxys.net/wp-content/plugins/*/google-analyticator/$script
+@@||codicebusiness.shinystat.com/cgi-bin/getcod.cgi?user=sportmediaset&p=2$script,domain=sportmediaset.mediaset.it
+! Polish
+@@||gemius.pl/gstream.js
+@@||kropka.onet.pl^*/onet.js$domain=tvnwarszawa.pl
+! Russian
+@@||afisha.ru/proxy/videonetworkproxy.ashx?$xmlhttprequest
+! Taiwanese
+@@||imrworldwide.com/novms/js/2/ggcmb353.js$domain=nexttv.com.tw
