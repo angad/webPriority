@@ -1,7 +1,5 @@
 .project
 .pydevproject
-HTTPHeader/__init__.py
 HTTPHeader/__init__.pyc
 HTTPHeader/headerBuilder.pyc
-JavaScript/__init__.py
 requests
