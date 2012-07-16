@@ -8,12 +8,16 @@ import urlparse
 def add_header(send, header, value):
     if(header == None and value == None):
         send += '\r\n'
+    elif(header == None and value != None):
+        print "Error"
+    elif(header != None and value == None):
+        print "Error"
     else:
         send += header + ": " + value + '\r\n'
     return send
 
-def construct(url, user_agent=None, accept=None, accept_lang=None, 
-              accept_encoding=None, connection=None):
+def construct(url, default_host=None, user_agent=None, accept=None, 
+              accept_lang=None, accept_encoding=None, connection=None):
     if url is None or url is '':
         return 'Error: Invalid URL'
     if user_agent is None:
@@ -26,9 +30,10 @@ def construct(url, user_agent=None, accept=None, accept_lang=None,
         accept_encoding = 'gzip, deflate'
     if connection is None:
         connection = 'keep-alive'
-    
     url_parsed = urlparse.urlparse(url)
     host = url_parsed.hostname
+    if host is None:
+        host = default_host
     path = url_parsed[2]
     
     send = 'GET ' + path + ' HTTP/1.1\r\n'
