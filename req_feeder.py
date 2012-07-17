@@ -61,6 +61,7 @@ if __name__ == "__main__":
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((proxy, port))
+        sock.settimeout(5)
     except socket.error as err:
         print "Socket failed: [%i] %s" % (err.errno, err.strerror)
         sys.exit(1)
@@ -70,9 +71,13 @@ if __name__ == "__main__":
 
     received = " "
     while len(received):
-        received = sock.recv(65536)
-        print "Received %i bytes" % len(received)
-    
+        try:
+            received = sock.recv(65536)
+            print "Received %i bytes" % len(received)
+        except socket.timeout:
+            print "===End==="
+            break
+        
     sock.close()
 
 
