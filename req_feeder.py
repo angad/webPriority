@@ -64,7 +64,9 @@ if __name__ == "__main__":
     except socket.error as err:
         print "Socket failed: [%i] %s" % (err.errno, err.strerror)
         sys.exit(1)
-
+    for req in content:
+        sock.send(req["request"])
+        print "Sending request %i with priority %i" % (req["id"], req["priority"])
     
     sock.close()
 
