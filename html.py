@@ -8,6 +8,7 @@ from argparse import ArgumentParser
 from HTTPHeader import headerBuilder
 import json
 import urlparse
+import unicodedata
 
 parser = ArgumentParser(description="Web Page Parser")
 parser.add_argument('--url', '-u',
@@ -17,6 +18,48 @@ parser.add_argument('--url', '-u',
                     required=True)
 
 args = parser.parse_args()
+
+def change_img_priority(h,w, old_priority):    
+    
+    WIDTH_AVG = 250
+    HEIGHT_AVG = 250
+    PRIORITY_ADJUST = .5
+    
+    # compare area to avg area, if much higher, lower adjust priority
+    # by PRIORITY_ADJUST
+ 
+    w = float(w)
+    h = float(h)    
+ 
+    
+    if( (h!= 0) and (w!= 0) ):
+        
+        area_ratio = (w*h)/(WIDTH_AVG * HEIGHT_AVG)
+        
+        if ( area_ratio > 1.25):
+            # have large image
+            new_priority = old_priority - PRIORITY_ADJUST
+        elif (area_ratio < .75):
+            new_priority = old_priority + PRIORITY_ADJUST
+        else:
+            new_priority = old_priority
+    else:
+        new_priority = old_priority
+    
+    #print "height. width, priority are %f, %f, %f " %(h,w,new_priority)
+    
+        
+    return new_priority
+
+
+
+
+
+
+
+
+
+
 
 class PagePriority(HTMLParser):
     
@@ -28,9 +71,9 @@ class PagePriority(HTMLParser):
     IFRAME = 5
     
     def handle_starttag(self, tag, attrs):
-        #import pdb; pdb.set_trace()    
         # external stylesheets and icons from <link>
         if(tag == 'link'):
+#            import pdb; pdb.set_trace()
             for attr in attrs:
                 if(attr[1] == 'stylesheet'):
                     self.add_element(tag, self.STYLESHEET, attrs)
@@ -58,8 +101,26 @@ class PagePriority(HTMLParser):
                 if(tag == 'script'):
                     
                     self.add_element(tag, self.SCRIPT, attrs)
+                # sandeep edit    
+                
                 if(tag == 'img'):
-                    self.add_element(tag, self.IMAGE, attrs)
+                    w = 0.
+                    h = 0.
+                    for att in attrs:
+                        if(att[0] == 'width'):
+                            w = att[1]
+                        
+                        if(att[0] == 'height'):
+                            h = att[1]
+ 
+                        
+                    
+                    img_priority = change_img_priority(w,h,self.IMAGE)
+#                    print tag + ", Img Priority: "
+#                    print img_priority
+                    
+                        
+                    self.add_element(tag, img_priority, attrs)
                 return
             
     
