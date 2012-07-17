@@ -8,20 +8,53 @@ from argparse import ArgumentParser
 from HTTPHeader import headerBuilder
 import json
 import urlparse
+import os, re
 
 parser = ArgumentParser(description="Web Page Parser")
+
+
+#parser.add_argument('--url', '-u',
+#                    dest="url",
+#                    action="store",
+#                    help="URL",
+#                    required=True)
+#parser.add_argument('--sort', '-s',
+#                    dest="sort",
+#                    action='store_true',
+#                    help="Sort By priority",
+#                    default=False)
+
+
 parser.add_argument('--url', '-u',
                     dest="url",
                     action="store",
                     help="URL",
-                    required=True)
+                    default=False)
+
 parser.add_argument('--sort', '-s',
                     dest="sort",
                     action='store_true',
                     help="Sort By priority",
                     default=False)
 
+parser.add_argument('--file', '-f',
+                    dest="url_list_file",
+                    action='store',
+                    help="URL file name",
+                    default=False)
+
+
 args = parser.parse_args()
+
+
+
+def purge(direc, pattern):
+    for f in os.listdir(direc):
+        if re.search(pattern, f):
+            os.remove(os.path.join(direc, f))
+
+
+
 
 class PagePriority(HTMLParser):
     
@@ -121,8 +154,12 @@ class PagePriority(HTMLParser):
             count += 1
         print 'Number of Elements: ' + str(count)
     
-    def create_headers(self, outFile):
-        default_hostname = urlparse.urlparse(args.url).hostname 
+    def create_headers(self, outFile, base_url):
+        #default_hostname = urlparse.urlparse(args.url).hostname
+        
+        default_hostname = base_url
+        
+         
         count = 0
         json_elements = []
         if args.sort:
@@ -152,6 +189,11 @@ class PagePriority(HTMLParser):
 
 def main():
 
+    direc = os.path.dirname(os.path.realpath(__file__))
+    purge(direc, r'(.*).com(\.*)')
+    purge(direc, r'(.*)requests(\.*)')
+   
+    
 #    parser = PagePriority()
 #    f = urllib.urlopen(args.url)
 #    s = f.read()
@@ -165,15 +207,13 @@ def main():
 #    outFile.close()
 
     url_id = 0 
-    input_file_name = 'url_file'
-    url_list_file = input_file_name + '.txt'
+#    input_file_name = 'url_file'
+#    url_list_file = input_file_name + '.txt'
  
     parser = PagePriority()
     
-    for line in open(url_list_file, 'r'):
-        
-        # call the parser on this url
-        f = urllib.urlopen(line)
+    if (args.url != False):
+        f = urllib.urlopen(args.url)
         s = f.read()
         f.close()
         s = s.decode('utf-8')
@@ -181,13 +221,38 @@ def main():
         # parser.print_list()
         
         # create a new requests file
-        file_name = 'requests' + str(url_id)
+        file_name = 'requests_url'
         
         outFile = open(file_name, 'w')
-        parser.create_headers(outFile)
+        base_url = urlparse.urlparse(args.url).hostname
+        parser.create_headers(outFile, base_url)
         outFile.close()
-#        parser.reset()
-        url_id += 1
+    
+    if(args.url_list_file != False):    
+    
+        for line in open(args.url_list_file, 'r'):
+            
+            # call the parser on this url
+            f = urllib.urlopen(line)
+            s = f.read()
+            f.close()
+            s = s.decode('utf-8')
+            parser.feed(s)
+            # parser.print_list()
+            
+            # create a new requests file
+            file_name = 'requests_file' + str(url_id)
+            
+            
+            url_parsed = urlparse.urlparse(line)
+            host = url_parsed.hostname
+            print host
+            
+            outFile = open(host, 'w')
+            parser.create_headers(outFile, host)
+            outFile.close()
+    #        parser.reset()
+            url_id += 1
 
 
 if __name__ == '__main__':
