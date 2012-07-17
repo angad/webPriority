@@ -15,6 +15,11 @@ parser.add_argument('--url', '-u',
                     action="store",
                     help="URL",
                     required=True)
+parser.add_argument('--sort', '-s',
+                    dest="sort",
+                    action='store_true',
+                    help="Sort By priority",
+                    default=False)
 
 args = parser.parse_args()
 
@@ -76,7 +81,8 @@ class PagePriority(HTMLParser):
     
     def print_list(self):
         count = 0
-        self.elements.sort(key=itemgetter(0))
+        if args.sort:
+            self.elements.sort(key=itemgetter(0))
         for element in self.elements:
             print element
             count += 1
@@ -87,7 +93,8 @@ class PagePriority(HTMLParser):
         default_hostname = urlparse.urlparse(args.url).hostname 
         count = 0
         json_elements = []
-        self.elements.sort(key=itemgetter(0))
+        if args.sort:
+            self.elements.sort(key=itemgetter(0))
         for element in self.elements:
             #print element
             url = [a[1] for a in element if a[0] == 'href' or a[0] == 'src']
