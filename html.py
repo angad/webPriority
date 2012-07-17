@@ -177,19 +177,50 @@ class PagePriority(HTMLParser):
         print json_content
         outFile.write(json_content)            
         print 'Number of Requests: ' + str(count)
+        self.elements = []
 
 def main():
-    parser = PagePriority()
-    f = urllib.urlopen(args.url)
-    s = f.read()
-    f.close()
-    s = s.decode('utf-8')
-    parser.feed(s)
 
-    # parser.print_list()
-    outFile = open('requests', 'w')
-    parser.create_headers(outFile)
-    outFile.close()
+#    parser = PagePriority()
+#    f = urllib.urlopen(args.url)
+#    s = f.read()
+#    f.close()
+#    s = s.decode('utf-8')
+#    parser.feed(s)
+#
+#    # parser.print_list()
+#    outFile = open('requests', 'w')
+#    parser.create_headers(outFile)
+#    outFile.close()
+
+    url_id = 0 
+    input_file_name = 'url_file'
+    url_list_file = input_file_name + '.txt'
+ 
+    parser = PagePriority()
+    
+    for line in open(url_list_file, 'r'):
+        
+        # call the parser on this url
+        f = urllib.urlopen(line)
+        s = f.read()
+        f.close()
+        s = s.decode('utf-8')
+        parser.feed(s)
+    
+        # parser.print_list()
+        
+        # create a new requests file
+        file_name = 'requests' + str(url_id)
+        
+        outFile = open(file_name, 'w')
+        parser.create_headers(outFile)
+        outFile.close()
+        
+#        parser.reset()
+        
+        url_id += 1
+
 
 if __name__ == '__main__':
     main()
