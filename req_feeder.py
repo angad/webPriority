@@ -66,7 +66,13 @@ if __name__ == "__main__":
         sys.exit(1)
     for req in content:
         sock.send(req["request"])
+        print req["request"]
         print "Sending request %i with priority %i" % (req["id"], req["priority"])
+
+    received = " "
+    while len(received):
+        received = sock.recv(65536)
+        print "Received %i bytes" % len(received)
     
     sock.close()
 
