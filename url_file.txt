@@ -1,0 +1,5 @@
+http://www.doughellmann.com/PyMOTW/argparse/
+http://docs.python.org/library/htmlparser.html
+http://www.hulu.com/?src=topnav
+http://www.cnn.com/
+http://techcrunch.com/
