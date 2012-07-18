@@ -83,14 +83,14 @@ class EasyListParser():
                 type = "unknown"
     
     def check_if_ad(self, url):
-        for f in self.whitelist:
-            f = f[0:-1]
-            regex = re.compile(f)
-            r = regex.search(url)
-            if r:
-                print f
-                print "WhiteListed!"
-                return 0
+#        for f in self.whitelist:
+#            f = f[0:-1]
+#            regex = re.compile(f)
+#            r = regex.search(url)
+#            if r:
+#                print f
+#                print "WhiteListed!"
+#                return 0
         
         for f in self.blacklist:
             f = f[0:-1]
@@ -121,8 +121,11 @@ def main():
     print "Total: " + str(parser.count)
     print "Blank: " + str(parser.blank_count)
     
-    url = "https://101m3.com"
-    parser.check_if_ad(url)
+    url = "http://ec.atdmt.com/ds/GZSRTSPNTCON/Evo_Updated_5_31/TS2C25_Sprint_EVO4GLaunch_Audio_300x250.swf?ver=1&clickTag1=http://at.atwola.com/adlink/5113/1838313/0/170/AdId=3143974;BnId=1;itime=640570493;nodecode=yes;impref=13426405712586145155;link=http://clk.atdmt.com/go/405296167/direct;wi.300;hi.250;ai.282779434;ct.1/01&clickTag=http://at.atwola.com/adlink/5113/1838313/0/170/AdId=3143974;BnId=1;itime=640570493;nodecode=yes;impref=13426405712586145155;link=http://clk.atdmt.com/go/405296167/direct;wi.300;hi.250;ai.282779434;ct.1/01"
+    if parser.check_if_ad(url):
+        print "Low Priority!"
+    else:
+        print "Normal Priority"
     
 if __name__ == '__main__':
     main()
