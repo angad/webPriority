@@ -8,6 +8,7 @@ import urllib
 from operator import itemgetter
 from argparse import ArgumentParser
 from HTTPHeader import headerBuilder
+from easylist import easylistParser
 import json
 import urlparse
 import os, re
@@ -136,6 +137,9 @@ class PagePriority(HTMLParser):
         print 'Number of Elements: ' + str(count)
     
     def create_headers(self, outFile, base_url):
+        
+        ads = easylistParser.EasyListParser()
+        ads.start()
         #default_hostname = urlparse.urlparse(args.url).hostname        
         default_hostname = base_url
         count = 0
@@ -151,6 +155,7 @@ class PagePriority(HTMLParser):
                 hostname = url_parsed.hostname
                 if hostname is None:
                     url = "http:// " + default_hostname + url
+#                print ads.check_if_ad(url)
                 priority = [a[1] for a in element if a[0] == 'priority']
                 priority = priority[0]
                 get_request = headerBuilder.construct(url)
@@ -160,7 +165,7 @@ class PagePriority(HTMLParser):
                 count += 1
 
         json_content = json.dumps(json_elements)
-        print json_content
+#        print json_content
         outFile.write(json_content)
         print 'Number of Requests: ' + str(count)
         self.elements = []
@@ -168,8 +173,8 @@ class PagePriority(HTMLParser):
 def main():
     direc = os.path.dirname(os.path.realpath(__file__))
     purge(direc, r'(.*).com(\.*)')
-    purge(direc, r'(.*)requests(\.*)')
-    
+    purge(direc, r'(.*)request(\.*)')
+
     url_id = 0
     parser = PagePriority()
     
@@ -180,32 +185,38 @@ def main():
         s = s.decode('utf-8')
         parser.feed(s)
         # parser.print_list()
-        
+        url = args.url
         # create a new requests file
-        file_name = 'requests_url'
+        url = re.sub("http://", "", url)
+        url = re.sub("www.", "", url)
+        url = re.sub("(\/)", "-", url)
+        file_name = "request 0 " + url + ".txt"
         
         outFile = open(file_name, 'w')
-        base_url = urlparse.urlparse(args.url).hostname
+        base_url = urlparse.urlparse(url).hostname
         parser.create_headers(outFile, base_url)
         outFile.close()
     
     if(args.url_list_file != False):
         for line in open(args.url_list_file, 'r'):
+
             # call the parser on this url
             f = urllib.urlopen(line)
             s = f.read()
             f.close()
             s = s.decode('utf-8')
             parser.feed(s)
-            # parser.print_list()
-            # create a new requests file
-            file_name = 'requests_file' + str(url_id)
             
+            # create a new requests file            
             url_parsed = urlparse.urlparse(line)
             host = url_parsed.hostname
-            print host
+
+            line = re.sub("http://", "", line)
+            line = re.sub("www.", "", line)
+            line = re.sub("(\/)", "-", line)
+            file_name = "request " + str(url_id) + " " + line + ".txt"
             
-            outFile = open(host, 'w')
+            outFile = open(file_name, 'w')
             parser.create_headers(outFile, host)
             outFile.close()
             url_id += 1

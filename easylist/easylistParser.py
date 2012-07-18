@@ -102,20 +102,21 @@ class EasyListParser():
                 return 1
         return 0
     
-    
+    def start(self):
+        files = ["easylist/easylist/easylist_adservers.txt",
+             "easylist/easylist/easylist_general_block.txt",
+             "easylist/easylist/easylist_general_hide.txt",
+             "easylist/easylist/easylist_specific_block.txt",
+             "easylist/easylist/easylist_specific_hide.txt",
+             "easylist/easylist/easylist_thirdparty.txt",
+             "easylist/easylist/easylist_whitelist.txt"]
+        for f in files:
+            self.parse_filter(f)
+
     
 def main():
     parser = EasyListParser()
-    files = ["easylist/easylist_adservers.txt",
-             "easylist/easylist_general_block.txt",
-             "easylist/easylist_general_hide.txt",
-             "easylist/easylist_specific_block.txt",
-             "easylist/easylist_specific_hide.txt",
-             "easylist/easylist_thirdparty.txt",
-             "easylist/easylist_whitelist.txt"]
-    for f in files:
-        parser.parse_filter(f)
-        
+    parser.start()
     print "Whitelist: " + str(len(parser.whitelist)) + " Bytes: " + str(sys.getsizeof(parser.whitelist))
     print "Blacklist: " + str(len(parser.blacklist)) + " Bytes: " + str(sys.getsizeof(parser.blacklist))
     print "Total: " + str(parser.count)
