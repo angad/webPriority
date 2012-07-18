@@ -4,7 +4,7 @@
 
 import re, sys
 
-class AdBlockParser():
+class EasyListParser():
     
     whitelist = []
     blacklist = []
@@ -25,6 +25,8 @@ class AdBlockParser():
     COMMENT = re.compile(r"^!")
     HIDDEN = re.compile(r"^\#\#[^#]")
     WHITELIST = re.compile(r"^@@")
+    
+    
     DOUBLEPIPE = re.compile(r"^\|\|")
     SINGLEPIPE = re.compile(r"^\|[^\|]")
     ENDPIPE = re.compile(r"\|$")
@@ -33,14 +35,15 @@ class AdBlockParser():
     DOT = re.compile(r"\.")
     BACKSLASH = re.compile(r"\\")
     FORWARDSSLASH = re.compile(r"/")
-    DOMAIN = re.compile(r"^\^https\?:\/\/w\?w\?w\?\\d\?.?")
+    DOMAIN = re.compile(r"\(\^\(https\?\:\/\/\)\?w\?w\?w\?\\d\?\\\.\?\)\?")
     
+    
+#    x = "^\(\^\(https\?:\/\/\)\?w\?w\?w\?\\d\?.?\)\?"
     all = open("all_filters.txt", "w")
 
     def parse_filter(self, filename):
         adFile = open(filename, "r")
         filters = adFile.readlines()
-        
                 
         for f in filters:
             self.count +=1
@@ -57,45 +60,52 @@ class AdBlockParser():
 
             if "$" in f:
                 f = f.split("$")[0] + '\n'
-                
+            
             f = re.sub(self.DOT, "\.", f)
             f = re.sub(self.QUESTIONMARK, "\?", f)
-            f = re.sub(self.ENDCARET, "[\?\/:]", f)
+            f = re.sub(self.ENDCARET, r"\\\\?/?:?", f)
             f = re.sub(self.ENDPIPE, "$", f)
             f = re.sub(self.SINGLEPIPE, "^", f)
-            f = re.sub(self.DOUBLEPIPE, "^https?://w?w?w?\d?\.?", f)
-
+            f = re.sub(self.DOUBLEPIPE, r"(^(https?://)?w?w?w?\d?\.?)?", f)
             whitelist = re.match(self.WHITELIST, f)
             domain = re.match(self.DOMAIN, f)
 
-#                print "none"
             if whitelist:
                 self.whitelist.append(f)
                 type = "whitelist"
                 self.all.write(type + ": " + f)
-#                print "whitelist"
             elif domain:
                 self.blacklist.append(f)
                 type = "blacklist"
                 self.all.write(type + ": " + f) 
-#                print "domain"
             else:
 #                self.blacklist.append(f)
                 type = "unknown"
-#                print "blacklist"
-            
-            
-
     
     def check_if_ad(self, url):
+        for f in self.whitelist:
+            f = f[0:-1]
+            regex = re.compile(f)
+            r = regex.search(url)
+            if r:
+                print f
+                print "WhiteListed!"
+                return 0
+        
         for f in self.blacklist:
+            f = f[0:-1]
             print f
-            t = re.match(f, url)
-            if t:
-                print t.group(0)
+            regex = re.compile(f)
+            r = regex.search(url)
+            if r:
+                print "BlackListed!"
+                return 1
+        return 0
+    
+    
     
 def main():
-    parser = AdBlockParser()
+    parser = EasyListParser()
     files = ["easylist/easylist_adservers.txt",
              "easylist/easylist_general_block.txt",
              "easylist/easylist_general_hide.txt",
@@ -111,8 +121,8 @@ def main():
     print "Total: " + str(parser.count)
     print "Blank: " + str(parser.blank_count)
     
-#    url = "http://101m3.com"
-#    parser.check_if_ad(url)
+    url = "https://101m3.com"
+    parser.check_if_ad(url)
     
 if __name__ == '__main__':
     main()
