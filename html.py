@@ -15,6 +15,11 @@ parser.add_argument('--url', '-u',
                     action="store",
                     help="URL",
                     required=True)
+parser.add_argument('--sort', '-s',
+                    dest="sort",
+                    action='store_true',
+                    help="Sort By priority",
+                    default=False)
 
 args = parser.parse_args()
 
@@ -26,12 +31,38 @@ class PagePriority(HTMLParser):
     IMAGE = 3
     EMBED = 4
     IFRAME = 5
-    AD = 6
+    
+    def change_img_priority(self, h, w, old_priority):    
+    
+        WIDTH_AVG = 250
+        HEIGHT_AVG = 250
+        PRIORITY_ADJUST = .5
+
+        # compare area to avg area, if much higher, lower adjust priority
+        # by PRIORITY_ADJUST 
+        w = float(w)
+        h = float(h)    
+ 
+        if( (h!= 0) and (w!= 0) ):
+            area_ratio = (w*h)/(WIDTH_AVG * HEIGHT_AVG)
+            if ( area_ratio > 1.25):
+                # have large image
+                new_priority = old_priority - PRIORITY_ADJUST
+            elif (area_ratio < .75):
+                new_priority = old_priority + PRIORITY_ADJUST
+            else:
+                new_priority = old_priority
+        else:
+            new_priority = old_priority
+                    
+    #print "height. width, priority are %f, %f, %f " %(h,w,new_priority)
+        return new_priority
+    
     
     def handle_starttag(self, tag, attrs):
-        #import pdb; pdb.set_trace()    
         # external stylesheets and icons from <link>
         if(tag == 'link'):
+#            import pdb; pdb.set_trace()
             for attr in attrs:
                 if(attr[1] == 'stylesheet'):
                     self.add_element(tag, self.STYLESHEET, attrs)
@@ -57,12 +88,18 @@ class PagePriority(HTMLParser):
         for attr in attrs:
             if(attr[0]=='src'):
                 if(tag == 'script'):
-                    
                     self.add_element(tag, self.SCRIPT, attrs)
                 if(tag == 'img'):
-                    self.add_element(tag, self.IMAGE, attrs)
+                    w = 0.
+                    h = 0.
+                    for att in attrs:
+                        if(att[0] == 'width'):
+                            w = att[1]
+                        if(att[0] == 'height'):
+                            h = att[1]
+                    img_priority = self.change_img_priority(w, h, self.IMAGE)
+                    self.add_element(tag, img_priority, attrs)
                 return
-            
     
     def add_element(self, tag, priority, attrs):
         attrs.insert(0, ('tag', tag))
@@ -77,21 +114,19 @@ class PagePriority(HTMLParser):
     
     def print_list(self):
         count = 0
-        self.elements.sort(key=itemgetter(0))
+        if args.sort:
+            self.elements.sort(key=itemgetter(0))
         for element in self.elements:
             print element
             count += 1
         print 'Number of Elements: ' + str(count)
     
-    
-    def check_if_ad(self, url):
-        
-                
     def create_headers(self, outFile):
         default_hostname = urlparse.urlparse(args.url).hostname 
         count = 0
         json_elements = []
-        self.elements.sort(key=itemgetter(0))
+        if args.sort:
+            self.elements.sort(key=itemgetter(0))
         for element in self.elements:
             #print element
             url = [a[1] for a in element if a[0] == 'href' or a[0] == 'src']
@@ -101,14 +136,8 @@ class PagePriority(HTMLParser):
                 hostname = url_parsed.hostname
                 if hostname is None:
                     url = "http:// " + default_hostname + url
-                    
-                isad = check_if_ad(url)
-                if isad is True:
-                    priority = self.AD
-                else:
-                    priority = [a[1] for a in element if a[0] == 'priority']
-                    priority = priority[0]
-                
+                priority = [a[1] for a in element if a[0] == 'priority']
+                priority = priority[0]
                 get_request = headerBuilder.construct(url)
                 json_element = {'id': count,  'priority': priority, 
                                 "request": get_request}
@@ -119,19 +148,47 @@ class PagePriority(HTMLParser):
         print json_content
         outFile.write(json_content)            
         print 'Number of Requests: ' + str(count)
+        self.elements = []
 
 def main():
-    parser = PagePriority()
-    f = urllib.urlopen(args.url)
-    s = f.read()
-    f.close()
-    s = s.decode('utf-8')
-    parser.feed(s)
 
-    # parser.print_list()
-    outFile = open('requests', 'w')
-    parser.create_headers(outFile)
-    outFile.close()
+#    parser = PagePriority()
+#    f = urllib.urlopen(args.url)
+#    s = f.read()
+#    f.close()
+#    s = s.decode('utf-8')
+#    parser.feed(s)
+#
+#    # parser.print_list()
+#    outFile = open('requests', 'w')
+#    parser.create_headers(outFile)
+#    outFile.close()
+
+    url_id = 0 
+    input_file_name = 'url_file'
+    url_list_file = input_file_name + '.txt'
+ 
+    parser = PagePriority()
+    
+    for line in open(url_list_file, 'r'):
+        
+        # call the parser on this url
+        f = urllib.urlopen(line)
+        s = f.read()
+        f.close()
+        s = s.decode('utf-8')
+        parser.feed(s)
+        # parser.print_list()
+        
+        # create a new requests file
+        file_name = 'requests' + str(url_id)
+        
+        outFile = open(file_name, 'w')
+        parser.create_headers(outFile)
+        outFile.close()
+#        parser.reset()
+        url_id += 1
+
 
 if __name__ == '__main__':
     main()
