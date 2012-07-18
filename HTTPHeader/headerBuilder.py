@@ -44,7 +44,7 @@ def construct(url, default_host=None, user_agent=None, accept=None,
     send = add_header(send, 'Accept-Encoding', accept_encoding)
     send = add_header(send, 'Connection', connection)
     send = add_header(send, None, None) #end
-    return repr(send)
+    return send
 
 def main():
     url = 'http://techcrunch.com/2012/07/12/bing-fund-microsoft-launches-its-own-angel-fund-and-incubator-program/'
