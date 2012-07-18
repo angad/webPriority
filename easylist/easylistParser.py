@@ -1,5 +1,5 @@
 '''
-@author:angadsingh
+@author:angad
 '''
 
 import re, sys

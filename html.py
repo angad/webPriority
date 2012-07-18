@@ -1,6 +1,8 @@
 '''
-@author: angadsingh
+@author: angad, chinch
 '''
+
+
 from HTMLParser import HTMLParser
 import urllib
 from operator import itemgetter
@@ -10,20 +12,7 @@ import json
 import urlparse
 import os, re
 
-parser = ArgumentParser(description="Web Page Parser")
-
-
-#parser.add_argument('--url', '-u',
-#                    dest="url",
-#                    action="store",
-#                    help="URL",
-#                    required=True)
-#parser.add_argument('--sort', '-s',
-#                    dest="sort",
-#                    action='store_true',
-#                    help="Sort By priority",
-#                    default=False)
-
+parser = ArgumentParser(description="Web Elements Priority Generator")
 
 parser.add_argument('--url', '-u',
                     dest="url",
@@ -46,15 +35,10 @@ parser.add_argument('--file', '-f',
 
 args = parser.parse_args()
 
-
-
 def purge(direc, pattern):
     for f in os.listdir(direc):
         if re.search(pattern, f):
             os.remove(os.path.join(direc, f))
-
-
-
 
 class PagePriority(HTMLParser):
     
@@ -65,17 +49,17 @@ class PagePriority(HTMLParser):
     EMBED = 4
     IFRAME = 5
     
-    def change_img_priority(self, h, w, old_priority):    
+    def change_img_priority(self, h, w, old_priority):
     
         WIDTH_AVG = 250
         HEIGHT_AVG = 250
         PRIORITY_ADJUST = .5
-
+        
         # compare area to avg area, if much higher, lower adjust priority
         # by PRIORITY_ADJUST 
         w = float(w)
         h = float(h)    
- 
+        
         if( (h!= 0) and (w!= 0) ):
             area_ratio = (w*h)/(WIDTH_AVG * HEIGHT_AVG)
             if ( area_ratio > 1.25):
@@ -87,15 +71,12 @@ class PagePriority(HTMLParser):
                 new_priority = old_priority
         else:
             new_priority = old_priority
-                    
-    #print "height. width, priority are %f, %f, %f " %(h,w,new_priority)
         return new_priority
     
     
     def handle_starttag(self, tag, attrs):
         # external stylesheets and icons from <link>
         if(tag == 'link'):
-#            import pdb; pdb.set_trace()
             for attr in attrs:
                 if(attr[1] == 'stylesheet'):
                     self.add_element(tag, self.STYLESHEET, attrs)
@@ -138,7 +119,7 @@ class PagePriority(HTMLParser):
         attrs.insert(0, ('tag', tag))
         attrs.insert(0, ('priority', priority))
         self.elements.append(attrs)
-
+    
     def handle_endtag(self, tag):
         pass
     
@@ -155,11 +136,8 @@ class PagePriority(HTMLParser):
         print 'Number of Elements: ' + str(count)
     
     def create_headers(self, outFile, base_url):
-        #default_hostname = urlparse.urlparse(args.url).hostname
-        
+        #default_hostname = urlparse.urlparse(args.url).hostname        
         default_hostname = base_url
-        
-         
         count = 0
         json_elements = []
         if args.sort:
@@ -176,40 +154,23 @@ class PagePriority(HTMLParser):
                 priority = [a[1] for a in element if a[0] == 'priority']
                 priority = priority[0]
                 get_request = headerBuilder.construct(url)
-                json_element = {'id': count,  'priority': priority, 
+                json_element = {'id': count,  'priority': priority,
                                 "request": get_request}
                 json_elements.append(json_element)
                 count += 1
 
         json_content = json.dumps(json_elements)
         print json_content
-        outFile.write(json_content)            
+        outFile.write(json_content)
         print 'Number of Requests: ' + str(count)
         self.elements = []
 
 def main():
-
     direc = os.path.dirname(os.path.realpath(__file__))
     purge(direc, r'(.*).com(\.*)')
     purge(direc, r'(.*)requests(\.*)')
-   
     
-#    parser = PagePriority()
-#    f = urllib.urlopen(args.url)
-#    s = f.read()
-#    f.close()
-#    s = s.decode('utf-8')
-#    parser.feed(s)
-#
-#    # parser.print_list()
-#    outFile = open('requests', 'w')
-#    parser.create_headers(outFile)
-#    outFile.close()
-
-    url_id = 0 
-#    input_file_name = 'url_file'
-#    url_list_file = input_file_name + '.txt'
- 
+    url_id = 0
     parser = PagePriority()
     
     if (args.url != False):
@@ -228,10 +189,8 @@ def main():
         parser.create_headers(outFile, base_url)
         outFile.close()
     
-    if(args.url_list_file != False):    
-    
+    if(args.url_list_file != False):
         for line in open(args.url_list_file, 'r'):
-            
             # call the parser on this url
             f = urllib.urlopen(line)
             s = f.read()
@@ -239,10 +198,8 @@ def main():
             s = s.decode('utf-8')
             parser.feed(s)
             # parser.print_list()
-            
             # create a new requests file
             file_name = 'requests_file' + str(url_id)
-            
             
             url_parsed = urlparse.urlparse(line)
             host = url_parsed.hostname
@@ -251,7 +208,6 @@ def main():
             outFile = open(host, 'w')
             parser.create_headers(outFile, host)
             outFile.close()
-    #        parser.reset()
             url_id += 1
 
 
