@@ -1,0 +1,15 @@
+@@||ads.fuckingmachines.com^$image,~third-party
+@@||ads.ultimatesurrender.com^$image,~third-party
+@@||adv.alsscan.com/inc/$image,stylesheet,domain=alscash.com
+@@||eskimotube.com/advertisements.php?$script
+@@||fucktube.com/work/videoad.php?
+@@||longtailvideo.com/5/adttext/adttext.js$domain=yuvutu.com
+@@||naiadsystems.com/flash/generic/$object,object-subrequest
+@@||skimtube.com/advertisements.php?
+@@||tjoob.com/go.php?ad=$script,~third-party
+! Anti-Adblock
+@@||pornstream.cc^*/adframe.js
+! Non-English
+@@||ads.b10f.jp/flv/$~third-party
+@@||ads.b10f.jp/images/$~third-party
+@@||b10f.jp/flv2/player_1280x1024.swf?*&movieurl=http://ads.b10f.jp/flv/$object,~third-party
