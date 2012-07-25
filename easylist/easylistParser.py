@@ -152,8 +152,8 @@ class EasyListParser():
         for f in files:
             self.parse_filter(f)
         
-        print "Whitelist: " + str(len(self.whitelist)) + " Bytes: " + str(sys.getsizeof(self.whitelist))
-        print "Blacklist: " + str(len(self.blacklist)) + " Bytes: " + str(sys.getsizeof(self.blacklist))
+#        print "Whitelist: " + str(len(self.whitelist)) + " Bytes: " + str(sys.getsizeof(self.whitelist))
+#        print "Blacklist: " + str(len(self.blacklist)) + " Bytes: " + str(sys.getsizeof(self.blacklist))
     
 def main():
     parser = EasyListParser()

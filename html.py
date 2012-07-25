@@ -32,6 +32,12 @@ parser.add_argument('--file', '-f',
                     help="URL file name",
                     default=False)
 
+parser.add_argument('--ad', '-a',
+                    dest="ad",
+                    action='store_true',
+                    help="Check resources for Ads",
+                    default=False)
+
 
 args = parser.parse_args()
 
@@ -179,7 +185,9 @@ class PagePriority(HTMLParser):
                 count += 1
 
 
-        ads.adjustPriority(json_elements)
+        if(args.ad):
+            print "Checking each URL for ad. This is gonna be slow :("
+            ads.adjustPriority(json_elements)
         json_content = json.dumps(json_elements)
         
 #        print json_content
