@@ -2,7 +2,6 @@
 @author: angad, chinch
 '''
 
-
 from HTMLParser import HTMLParser
 import urllib
 from operator import itemgetter
@@ -49,12 +48,13 @@ class PagePriority(HTMLParser):
     IMAGE = 3
     EMBED = 4
     IFRAME = 5
+    AD = 6
     
     def change_img_priority(self, h, w, old_priority):
     
         WIDTH_AVG = 250
         HEIGHT_AVG = 250
-        PRIORITY_ADJUST = .5
+        PRIORITY_ADJUST = 1
         
         # compare area to avg area, if much higher, lower adjust priority
         # by PRIORITY_ADJUST 
@@ -64,9 +64,10 @@ class PagePriority(HTMLParser):
         if( (h!= 0) and (w!= 0) ):
             area_ratio = (w*h)/(WIDTH_AVG * HEIGHT_AVG)
             if ( area_ratio > 1.25):
-                # have large image
-                new_priority = old_priority - PRIORITY_ADJUST
+                # a large image, thus priority remains the same
+                new_priority = old_priority
             elif (area_ratio < .75):
+                # small image, priority numeric value increased
                 new_priority = old_priority + PRIORITY_ADJUST
             else:
                 new_priority = old_priority
@@ -137,34 +138,50 @@ class PagePriority(HTMLParser):
         print 'Number of Elements: ' + str(count)
     
     def create_headers(self, outFile, base_url):
-        
         ads = easylistParser.EasyListParser()
         ads.start()
-        #default_hostname = urlparse.urlparse(args.url).hostname        
-        default_hostname = base_url
         count = 0
         json_elements = []
+        
+        # sort by priority
         if args.sort:
             self.elements.sort(key=itemgetter(0))
+        
         for element in self.elements:
-            #print element
             url = [a[1] for a in element if a[0] == 'href' or a[0] == 'src']
+            # check if the URL is valid
             if len(url) is not 0:
                 url = url[0].encode('ascii', 'ignore')
                 url_parsed = urlparse.urlparse(url)
                 hostname = url_parsed.hostname
-                if hostname is None:
-                    url = "http:// " + default_hostname + url
-#                print ads.check_if_ad(url)
+                if hostname is None: # its a relative url
+                    url = "http:// " + base_url + url
+                
+                # check for duplicate url
+                flag = 0
+                for e in json_elements:
+                    if e['url'] == url:
+                        flag = 1    
+                if flag == 1:
+                    continue
+
+                # get the priority
                 priority = [a[1] for a in element if a[0] == 'priority']
                 priority = priority[0]
+                
+                # construct the get request for the URL
                 get_request = headerBuilder.construct(url)
+                
+                # construct a JSON row
                 json_element = {'id': count,  'priority': priority,
-                                "request": get_request}
+                                "request": get_request, 'url': url}
                 json_elements.append(json_element)
                 count += 1
 
+
+        ads.adjustPriority(json_elements)
         json_content = json.dumps(json_elements)
+        
 #        print json_content
         outFile.write(json_content)
         print 'Number of Requests: ' + str(count)
