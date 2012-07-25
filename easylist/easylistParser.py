@@ -45,6 +45,10 @@ class EasyListParser():
 #    x = "^\(\^\(https\?:\/\/\)\?w\?w\?w\?\\d\?.?\)\?"
 #    all = open("all_filters.txt", "w")
 
+
+    # parse the filters from the given file name.
+    # add the blacklisted urls to blacklist list.
+    # this is really hackish :(
     def parse_filter(self, filename):
         self.call_count += 1
         adFile = open(filename, "r")
@@ -79,7 +83,6 @@ class EasyListParser():
             f = re.sub(self.SINGLEPIPE, "^", f)
             f = re.sub(self.DOUBLEPIPE, r"(^(https?://)?w?w?w?\d?\.?)?", f)
             
-            
             whitelist = re.match(self.WHITELIST, f)
             domain = re.match(self.DOMAIN, f)
 
@@ -96,6 +99,8 @@ class EasyListParser():
                 type = "unknown"
     
     def check_if_ad(self, url):
+
+        # Whitelisting
 #        for f in self.whitelist:
 #            f = f[0:-1]
 #            regex = re.compile(f)
@@ -105,6 +110,7 @@ class EasyListParser():
 #                print "WhiteListed!"
 #                return 0
         
+        # Blacklisting
         for f in self.blacklist:
             f = f[0:-1]
 #            print f
@@ -115,6 +121,10 @@ class EasyListParser():
                 return 1
         return 0
     
+    # Takes the JSON elements and goes through the URLs
+    # and passes it through the blacklist regex to figure
+    # out if its an advertisement
+    # it adjusts the priority based on that
     def adjustPriority(self, elements):
         for element in elements:
             url = element['url']
@@ -126,14 +136,19 @@ class EasyListParser():
                 if r:
                     print "Found!"
                     element['priority'] = 10
+        return elements
 
     
     def print_call_count(self):
         print self.call_count
         self.call_count = 0
 
-    
+    # Creates the blacklist and whitelist in memory
     def start(self):
+        
+        # uncomment this if running this file independently
+        # and comment the one below.
+
 #        files = ["easylist/easylist_adservers.txt",
 #             "easylist/easylist_general_block.txt",
 #             "easylist/easylist_general_hide.txt",

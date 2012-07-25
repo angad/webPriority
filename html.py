@@ -27,9 +27,9 @@ parser.add_argument('--sort', '-s',
                     default=False)
 
 parser.add_argument('--file', '-f',
-                    dest="url_list_file",
+                    dest="urlFile",
                     action='store',
-                    help="URL file name",
+                    help="URL List file name",
                     default=False)
 
 parser.add_argument('--ad', '-a',
@@ -41,6 +41,7 @@ parser.add_argument('--ad', '-a',
 
 args = parser.parse_args()
 
+# remove all existing URL results
 def purge(direc, pattern):
     for f in os.listdir(direc):
         if re.search(pattern, f):
@@ -56,6 +57,8 @@ class PagePriority(HTMLParser):
     IFRAME = 5
     AD = 6
     
+    # adjusts the image priority based on the height
+    # returns the new priority
     def change_img_priority(self, h, w, old_priority):
     
         WIDTH_AVG = 250
@@ -81,7 +84,7 @@ class PagePriority(HTMLParser):
             new_priority = old_priority
         return new_priority
     
-    
+    # HTMLParser function that parses the start tags
     def handle_starttag(self, tag, attrs):
         # external stylesheets and icons from <link>
         if(tag == 'link'):
@@ -123,6 +126,7 @@ class PagePriority(HTMLParser):
                     self.add_element(tag, img_priority, attrs)
                 return
     
+    # ad element and priority to a list of elements
     def add_element(self, tag, priority, attrs):
         attrs.insert(0, ('tag', tag))
         attrs.insert(0, ('priority', priority))
@@ -143,6 +147,8 @@ class PagePriority(HTMLParser):
             count += 1
         print 'Number of Elements: ' + str(count)
     
+    
+    # uses the element list to create headers
     def create_headers(self, outFile, base_url):
         ads = easylistParser.EasyListParser()
         ads.start()
@@ -222,8 +228,8 @@ def main():
         parser.create_headers(outFile, base_url)
         outFile.close()
     
-    if(args.url_list_file != False):
-        for line in open(args.url_list_file, 'r'):
+    if(args.urlFile != False):
+        for line in open(args.urlFile, 'r'):
 
             # call the parser on this url
             f = urllib.urlopen(line)
